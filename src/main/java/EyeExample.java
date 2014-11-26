@@ -1,14 +1,17 @@
+import com.google.inject.Guice;
+import com.google.inject.Injector;
+import com.google.inject.Key;
 import org.apache.log4j.Logger;
 import org.eye.EyeEvent;
 import org.eye.EyeTask;
 import org.eye.EyeWatcher;
 import org.eye.exceptions.EyeWatcherException;
-import org.eye.util.BlockQueueWrap;
+import org.eye.provider.InjectProvider;
 import org.eye.util.MessageBlockQueue;
 
 import java.io.IOException;
 import java.nio.file.Paths;
-import java.util.LinkedList;
+import java.util.Arrays;
 import java.util.Queue;
 
 /**
@@ -20,16 +23,22 @@ public class EyeExample {
 
 	public static void main(String[] args) throws Exception {
 
+		Injector injector = Guice.createInjector(new InjectProvider());
+
 		EyeWatcher watcher = new EyeWatcher();
-		MessageBlockQueue<EyeEvent> messages = new BlockQueueWrap<>(10);
-		Queue<String> argsQueue = new LinkedList<>();
-		for(String path : args){
-			argsQueue.add(path);
-		}
+
+		// using dependency injection
+		MessageBlockQueue<EyeEvent> messages = injector.getInstance(MessageBlockQueue.class);
+		Queue<String> argsQueue = injector.getInstance(new Key<Queue<String>>() {});
+
+		argsQueue.addAll(Arrays.asList(args));
+
 		if(argsQueue.size() < 2){
 			throw new Exception("Illegal number of arguments");
 		}
+
 		int messagesToRead = Integer.parseInt(argsQueue.poll());
+
 		try {
 			watcher.setTaskPerThread(2);
 			watcher.setMessageQueue(messages);

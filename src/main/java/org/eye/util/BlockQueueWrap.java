@@ -1,5 +1,8 @@
 package org.eye.util;
 
+import com.google.inject.Inject;
+
+import javax.inject.Named;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -11,7 +14,8 @@ public class BlockQueueWrap<T> implements MessageBlockQueue<T> {
 	private final BlockingQueue<T> queue;
 	private final int MAX_CAPACITY;
 
-	public BlockQueueWrap(int maxCapacity) {
+	@Inject
+	public BlockQueueWrap(@Named( "COUNT" )int maxCapacity) {
 		this.MAX_CAPACITY = maxCapacity;
 		queue = new LinkedBlockingQueue<>(MAX_CAPACITY);
 	}
