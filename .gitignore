@@ -34,3 +34,7 @@ proguard/
 build/
 bin/
 gradle/
+gradlew
+
+#idea
+.idea/
